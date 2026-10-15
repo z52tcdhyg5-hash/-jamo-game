@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>자모를 구하라! — Pixel Quest</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:20px;background:#d9e7ef;color:#f5f2df;font-family:monospace;display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
+#app{width:min(100%,560px)}.screen{border:3px solid #35445b;background:#17233b;padding:16px;box-shadow:5px 5px 0 #a4b8c7}
+button{font:inherit;cursor:pointer}.pixel-btn{border:2px solid #35445b;background:#f4d88b;color:#27334a;padding:12px;box-shadow:3px 3px 0 #35445b;font-weight:800;min-height:46px;width:100%}.pixel-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #35445b}.answer{background:#f6f0df;color:#27334a;border:2px solid #9eabc0;box-shadow:3px 3px 0 #35445b;font-size:22px;padding:12px;min-height:56px;font-weight:900}.answer:disabled{cursor:default;opacity:.9}.correct{background:#b9e8ad!important;border-color:#4e8755!important}.wrong{background:#f1b7c0!important;border-color:#a34e66!important}.box{border:2px solid #8194b0;background:#263653;padding:12px}.muted{color:#c2cee0}.sprite{font-size:44px;line-height:1}.progress{height:10px;background:#35445b;border:1px solid #8091ad;margin-bottom:16px}.fill{height:100%;background:#a9df9b;width:0}.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.center{text-align:center}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center}.map{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:12px}.tile{height:35px;width:35px;border:2px solid #536d81;background:#375b69;display:flex;align-items:center;justify-content:center}.tile.done{background:#9bce9c;color:#1c3d36}.tile.current{background:#f4d88b;color:#27334a;border-color:white}[hidden]{display:none!important}button:focus-visible{outline:3px solid white;outline-offset:3px}
+</style>
+</head>
+<body><main id="app"><div class="screen">
+<div class="row" style="margin-bottom:12px"><span style="color:#b7d9c0;font-size:12px;letter-spacing:2px">★ KOREAN QUEST ★</span><span id="score">SCORE 000</span></div>
+<section id="home">
+<div class="center" style="padding:12px 0"><div style="font-size:42px">🌙 ✦ 🌙</div><h1 style="color:#f4d88b;font-size:clamp(25px,7vw,36px);margin:12px 0">자모를 구하라!</h1><div class="muted">SAVE THE HANGUL · PIXEL QUEST</div></div>
+<div class="box" style="margin:16px 0"><div class="row"><div class="sprite">🧙🏻‍♀️</div><div style="font-size:14px;line-height:1.8">한글 마을의 글자들이 사라졌어요!<br>자음과 모음을 조합하고 미션을 해결해서<br><b style="color:#f4d88b">최종 보스</b>를 물리치세요!</div></div></div>
+<div class="three" style="margin-bottom:16px"><div class="box"><div style="font-size:22px">🔤</div><small>자모 조합</small></div><div class="box"><div style="font-size:22px">🗺️</div><small>5개 스테이지</small></div><div class="box"><div style="font-size:22px">👾</div><small>보스 미션</small></div></div>
+<button id="start" class="pixel-btn">▶ 게임 시작하기</button><p class="center muted" style="font-size:12px">조작 방법: 정답을 선택하세요!</p>
+</section>
+<section id="play" hidden>
+<div class="row" style="margin-bottom:12px"><b id="stage" style="color:#f4d88b">STAGE 1 / 5</b><span id="lives">♥ ♥ ♥</span></div><div class="progress"><div id="fill" class="fill"></div></div>
+<div class="row center" style="justify-content:center;gap:20px;margin-bottom:16px"><span id="hero" class="sprite">🧙🏻‍♀️</span><span style="font-size:24px">➜</span><span id="enemy" class="sprite">👾</span></div>
+<div class="box center" style="margin-bottom:12px"><div id="type" style="color:#b7d9c0;font-size:12px;margin-bottom:8px">MISSION 01</div><div id="question" style="color:#f4d88b;font-size:26px;font-weight:900;margin-bottom:8px">ㄱ + ㅏ = ?</div><div id="hint" class="muted" style="font-size:14px">알맞은 글자를 선택하세요.</div></div>
+<div id="answers" class="grid"></div><div id="feedback" class="center" aria-live="polite" style="font-size:14px;min-height:44px;padding-top:14px"></div><button id="next" class="pixel-btn" hidden>다음 스테이지 ▶</button><div class="row muted" style="font-size:12px;margin-top:16px"><span id="maplabel">한글 마을</span><span id="counter">1 / 5</span></div><div id="map" class="map" aria-label="스테이지 진행 지도"></div>
+</section>
+<section id="end" class="center" hidden style="padding:20px 0"><div id="endicon" style="font-size:50px">🏆</div><h2 id="endtitle" style="color:#f4d88b">MISSION CLEAR!</h2><p id="endtext" style="font-size:14px;line-height:1.8"></p><div class="box" style="margin:20px 0"><div class="muted" style="font-size:12px">FINAL SCORE</div><div id="finalscore" style="color:#f4d88b;font-size:30px;font-weight:bold;margin-top:8px">000</div></div><button id="restart" class="pixel-btn">↻ 다시 도전하기</button></section>
+</div></main>
+<script>
+(()=>{const $=id=>document.getElementById(id);const qs=[
+{type:'자모 조합',q:'ㄱ + ㅏ = ?',hint:'자음 ㄱ과 모음 ㅏ를 합쳐 보세요!',a:['가','나','고','다'],c:'가',why:'ㄱ + ㅏ = 가!'},
+{type:'자모 찾기',q:'“나”의 첫소리는?',hint:'“나”를 만드는 자음을 찾아보세요.',a:['ㄷ','ㄴ','ㅁ','ㄱ'],c:'ㄴ',why:'나 = ㄴ + ㅏ!'},
+{type:'글자 만들기',q:'ㄷ + ㅗ = ?',hint:'자음과 모음을 순서대로 조합하세요.',a:['두','도','다','고'],c:'도',why:'ㄷ + ㅗ = 도!'},
+{type:'모음 미션',q:'“무”에 들어가는 모음은?',hint:'“무”의 가운데 소리를 생각해 보세요.',a:['ㅏ','ㅓ','ㅜ','ㅣ'],c:'ㅜ',why:'무 = ㅁ + ㅜ!'},
+{type:'FINAL BOSS',q:'ㄱ + ㅗ = ?',hint:'보스를 물리칠 마지막 글자를 완성하세요!',a:['구','고','가','노'],c:'고',why:'ㄱ + ㅗ = 고! 최종 보스 격파!'}
+];let i=0,score=0,lives=3,locked=false,correct=0;
+function scoreText(){$('score').textContent='SCORE '+String(score).padStart(3,'0')}
+function drawMap(){$('map').innerHTML=qs.map((q,n)=>`<div class="tile ${n<i?'done':n===i?'current':''}" aria-label="스테이지 ${n+1}">${n<i?'✓':n===i?'★':'?'}</div>`).join('')}
+function start(){i=0;score=0;lives=3;correct=0;scoreText();$('home').hidden=true;$('end').hidden=true;$('play').hidden=false;render()}
+function render(){let q=qs[i];locked=false;$('stage').textContent=`STAGE ${i+1} / ${qs.length}`;$('lives').textContent='♥ '.repeat(lives)+'♡ '.repeat(3-lives);$('fill').style.width=(i/qs.length*100)+'%';$('type').textContent=`MISSION 0${i+1} · ${q.type}`;$('question').textContent=q.q;$('hint').textContent=q.hint;$('feedback').textContent='';$('next').hidden=true;$('hero').textContent='🧙🏻‍♀️';$('enemy').textContent=i===4?'👹':'👾';$('counter').textContent=`${i+1} / ${qs.length}`;$('maplabel').textContent=i===4?'보스 스테이지':'한글 마을';$('answers').innerHTML='';q.a.forEach(choice=>{let b=document.createElement('button');b.className='answer';b.textContent=choice;b.type='button';b.addEventListener('click',()=>choose(choice,b));$('answers').appendChild(b)});drawMap()}
+function choose(choice,button){if(locked)return;locked=true;let q=qs[i];[...$('answers').children].forEach(b=>{b.disabled=true;if(b.textContent===q.c)b.classList.add('correct')});if(choice===q.c){score+=20;correct++;$('feedback').textContent='✓ 정답! '+q.why;$('feedback').style.color='#b9e8ad';$('hero').textContent='🧙🏻‍♀️✨';$('enemy').textContent='💥'}else{lives=Math.max(0,lives-1);button.classList.add('wrong');$('feedback').textContent='✗ 정답은 '+q.c+'. '+q.why;$('feedback').style.color='#f1b7c0'}scoreText();$('lives').textContent='♥ '.repeat(lives)+'♡ '.repeat(3-lives);$('next').hidden=false;$('next').textContent=i===qs.length-1?'결과 확인하기 🏆':'다음 스테이지 ▶'}
+function next(){if(!locked)return;if(i<qs.length-1){i++;render()}else finish()}
+function finish(){$('play').hidden=true;$('end').hidden=false;$('fill').style.width='100%';let win=correct>=4;$('endicon').textContent=win?'🏆':'🌱';$('endtitle').textContent=win?'MISSION CLEAR!':'QUEST COMPLETE!';$('endtext').textContent=`5개 미션 중 ${correct}개 정답! `+(win?'한글 마을을 구했어요! 정말 잘했어요!':'다시 도전해서 한글 마을을 구해 보세요!');$('finalscore').textContent=String(score).padStart(3,'0')+' P'}
+$('start').addEventListener('click',start);$('next').addEventListener('click',next);$('restart').addEventListener('click',start);
+})();
+</script>
+</body></html>
